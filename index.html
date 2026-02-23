@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/pwa-192x192.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Chroma Pour | Color Sort Puzzle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <h1>Chroma<span>Pour</span></h1>
+      <div class="level-badge">Level <span id="level-num">1</span></div>
+    </header>
+
+    <main>
+      <div id="game-container">
+        <!-- Jars will be injected here -->
+      </div>
+    </main>
+
+    <footer>
+      <div class="controls">
+        <button id="undo-btn" class="ctrl-btn" title="Undo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6 6-6" />
+          </svg>
+          <span>Undo</span>
+        </button>
+        <button id="restart-btn" class="ctrl-btn" title="Restart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+          </svg>
+          <span>Restart</span>
+        </button>
+        <button id="add-jar-btn" class="ctrl-btn special" title="Get Help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>New Jar</span>
+        </button>
+      </div>
+    </footer>
+
+    <div id="win-overlay" class="overlay hidden">
+      <div class="modal">
+        <h2>Level Complete!</h2>
+        <p>You've sorted the harmony.</p>
+        <button id="next-level-btn" class="primary-btn">Next Level</button>
+      </div>
+    </div>
+
+    <div id="ad-overlay" class="overlay hidden">
+      <div class="modal">
+        <div class="ad-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" style="width: 48px; height: 48px; color: var(--accent-color); margin-bottom: 1rem;">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+            <polyline points="17 2 12 7 7 2" />
+          </svg>
+        </div>
+        <h2>Need an extra jar?</h2>
+        <p>Watch a short video to unlock another container!</p>
+        <div id="ad-content" class="hidden">
+          <div class="ad-placeholder">
+            <div class="timer-circle">
+              <span id="ad-timer">5</span>s
+            </div>
+            <div class="progress-bar">
+              <div id="progress-fill"></div>
+            </div>
+            <p class="ad-status">Optimizing color spectrum...</p>
+          </div>
+        </div>
+        <div id="ad-prompt">
+          <button id="watch-ad-btn" class="primary-btn" style="margin-bottom: 1rem;">Watch Video</button>
+          <button id="cancel-ad-btn" class="text-btn"
+            style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-family: inherit;">Maybe
+            Later</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

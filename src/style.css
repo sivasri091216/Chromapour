@@ -317,21 +317,28 @@ footer {
 /* Pouring Stream Animation */
 .stream {
   position: absolute;
-  width: 6px;
-  background: currentColor;
+  width: 8px;
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      currentColor 50%,
+      rgba(0, 0, 0, 0.1) 100%);
+  background-color: currentColor;
   top: -10px;
   z-index: 50;
   pointer-events: none;
   transform-origin: top center;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  animation: stream-flow 0.4s ease-out forwards;
+  border-radius: 4px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  animation:
+    stream-flow 0.4s ease-out forwards,
+    stream-wiggle 0.2s infinite alternate ease-in-out;
 }
 
 @keyframes stream-flow {
   0% {
     height: 0;
     opacity: 0;
+    transform: scaleX(0.5);
   }
 
   50% {
@@ -341,6 +348,44 @@ footer {
   100% {
     height: calc(var(--stream-height, 100) * 1px);
     opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes stream-wiggle {
+  from {
+    transform: rotate(-0.5deg);
+  }
+
+  to {
+    transform: rotate(0.5deg);
+  }
+}
+
+/* Splash Effect */
+.splash {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 10px;
+  background: radial-gradient(ellipse at center, currentColor 0%, transparent 70%);
+  filter: blur(2px);
+  z-index: 60;
+  border-radius: 50%;
+  animation: splash-ripple 0.4s infinite ease-out;
+}
+
+@keyframes splash-ripple {
+  0% {
+    transform: translateX(-50%) scale(0.5);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1.5);
+    opacity: 0;
   }
 }
 

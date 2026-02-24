@@ -372,6 +372,12 @@ async function performPour(fromIndex, toIndex) {
   } else {
     stream.style.left = '0';
   }
+
+  // Add splash effect at the bottom of the stream
+  const splash = document.createElement('div');
+  splash.className = 'splash';
+  stream.appendChild(splash);
+
   fromEl.appendChild(stream);
 
   // Play continuous pouring sound for the duration of the transfer

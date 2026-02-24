@@ -47,7 +47,7 @@ let pouringBuffer = null;
 async function loadPouringSound() {
   if (pouringBuffer) return pouringBuffer;
   try {
-    const response = await fetch('/sounds/pouring.mp3');
+    const response = await fetch('sounds/pouring.mp3');
     const arrayBuffer = await response.arrayBuffer();
     pouringBuffer = await audioCtx.decodeAudioData(arrayBuffer);
     return pouringBuffer;

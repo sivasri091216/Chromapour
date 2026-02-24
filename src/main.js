@@ -263,7 +263,7 @@ function render() {
 }
 
 async function handleJarClick(index) {
-  initAudio();
+  await initAudio();
   if (state.isAnimating) return;
 
   const currentJar = state.jars[index];

@@ -10,6 +10,7 @@ async function initAudio() {
   if (audioCtx.state === 'suspended') {
     await audioCtx.resume();
   }
+  loadPouringSound(); // Preload pouring sound
 }
 
 function playGlugSound() {
@@ -19,53 +20,65 @@ function playGlugSound() {
   const now = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(100 + Math.random() * 60, now);
-  osc.frequency.exponentialRampToValueAtTime(180 + Math.random() * 40, now + 0.15);
-
-  gain.gain.setValueAtTime(0.1, now);
-  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.15);
-}
-
-function playPouringSound(duration) {
-  initAudio();
-  if (!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-  const bufferSize = audioCtx.sampleRate * duration;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1;
-  }
-
-  const noise = audioCtx.createBufferSource();
-  noise.buffer = buffer;
-
   const filter = audioCtx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(1200, now);
-  filter.frequency.exponentialRampToValueAtTime(800, now + duration);
 
-  const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.04, now + 0.1);
-  gain.gain.setValueAtTime(0.04, now + duration - 0.1);
-  gain.gain.linearRampToValueAtTime(0, now + duration);
+  // "Pop" or "Bubble" sound
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(150 + Math.random() * 100, now);
+  osc.frequency.exponentialRampToValueAtTime(300 + Math.random() * 100, now + 0.1);
 
-  noise.connect(filter);
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(400, now);
+  filter.Q.setValueAtTime(10, now);
+
+  gain.gain.setValueAtTime(0.08, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+  osc.connect(filter);
   filter.connect(gain);
   gain.connect(audioCtx.destination);
 
-  noise.start(now);
-  noise.stop(now + duration);
+  osc.start(now);
+  osc.stop(now + 0.1);
+}
+
+let pouringBuffer = null;
+
+async function loadPouringSound() {
+  if (pouringBuffer) return pouringBuffer;
+  try {
+    const response = await fetch('/sounds/pouring.mp3');
+    const arrayBuffer = await response.arrayBuffer();
+    pouringBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    return pouringBuffer;
+  } catch (e) {
+    console.error('Failed to load pouring sound:', e);
+    return null;
+  }
+}
+
+async function playPouringSound(duration) {
+  initAudio();
+  if (!audioCtx) return;
+
+  const buffer = await loadPouringSound();
+  if (!buffer) return;
+
+  const now = audioCtx.currentTime;
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.3, now + 0.1);
+  gain.gain.setValueAtTime(0.3, now + duration - 0.1);
+  gain.gain.linearRampToValueAtTime(0, now + duration);
+
+  source.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  source.start(now);
+  source.stop(now + duration);
 }
 
 function playWinSound() {

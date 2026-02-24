@@ -72,10 +72,20 @@ h1 span {
 .level-badge {
   background: rgba(139, 92, 246, 0.1);
   border: 1px solid rgba(139, 92, 246, 0.2);
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1rem;
   border-radius: 100px;
   font-weight: 600;
   color: #c4b5fd;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+#level-num {
+  font-weight: 800;
+  color: #fff;
 }
 
 main {
@@ -86,18 +96,23 @@ main {
 }
 
 #game-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--jar-width), 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
   justify-content: center;
-  align-items: flex-end;
+  align-items: end;
   perspective: 1000px;
+  margin: 0 auto;
 }
 
 /* Jar Styling */
 .jar {
-  width: var(--jar-width);
+  width: 100%;
+  max-width: var(--jar-width);
   height: var(--jar-height);
+  aspect-ratio: 1 / 3.3;
   background: var(--jar-bg);
   border: 2px solid var(--jar-border);
   border-top: none;
@@ -110,6 +125,7 @@ main {
   padding-bottom: 2px;
   backdrop-filter: blur(4px);
   z-index: 10;
+  margin: 0 auto;
 }
 
 .jar::before {
@@ -178,13 +194,25 @@ main {
   opacity: 0.6;
 }
 
-/* Controls */
 footer {
   margin-top: 1.5rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
   padding-bottom: env(safe-area-inset-bottom);
   flex-shrink: 0;
+}
+
+.watermark {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .controls {
@@ -317,13 +345,36 @@ footer {
 }
 
 @media (max-width: 600px) {
+  #app {
+    padding: 0.75rem;
+  }
+
+  header {
+    margin-bottom: 0.75rem;
+  }
+
   h1 {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
+  }
+
+  .level-badge {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  #game-container {
+    gap: 1rem;
   }
 
   .jar {
-    --jar-width: 50px;
-    --jar-height: 160px;
+    --jar-width: 14vw;
+    --jar-height: auto;
+    max-width: 50px;
+  }
+
+  .jar::before {
+    top: -6px;
+    height: 6px;
   }
 
   .ctrl-btn span {
@@ -331,7 +382,7 @@ footer {
   }
 
   .ctrl-btn {
-    padding: 0.75rem;
+    padding: 0.6rem;
   }
 }
 
@@ -355,10 +406,53 @@ footer {
     transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
     opacity: 0;
   }
-}  
-#ad-content { margin: 2rem 0; width: 100%%; }  
-.ad-placeholder { background: rgba(0,0,0,0.2); padding: 2rem; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 1rem; }  
-.timer-circle { width: 60px; height: 60px; border: 3px solid var(--accent-color); border-radius: 50%%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; color: var(--accent-color); }  
-.progress-bar { width: 100%%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }  
-#progress-fill { width: 0%%; height: 100%%; background: var(--accent-color); transition: width 0.1s linear; }  
-.ad-status { font-size: 0.9rem; color: var(--text-secondary); font-style: italic; } 
+}
+
+#ad-content {
+  margin: 2rem 0;
+  width: 100%;
+}
+
+.ad-placeholder {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.timer-circle {
+  width: 60px;
+  height: 60px;
+  border: 3px solid var(--accent-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent-color);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#progress-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--accent-color);
+  transition: width 0.1s linear;
+}
+
+.ad-status {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}

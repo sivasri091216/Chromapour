@@ -69,6 +69,37 @@ h1 span {
   -webkit-text-fill-color: transparent;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.icon-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
 .level-badge {
   background: rgba(139, 92, 246, 0.1);
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -86,6 +117,21 @@ h1 span {
 #level-num {
   font-weight: 800;
   color: #fff;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .header-right {
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+  }
 }
 
 main {

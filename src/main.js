@@ -14,8 +14,8 @@ async function initAudio() {
 }
 
 async function playGlugSound() {
+  if (!state.isSoundEnabled) return;
   const ctx = await initAudio();
-  if (!ctx || ctx.state !== 'running') return;
 
   const now = ctx.currentTime;
   const osc = ctx.createOscillator();
@@ -59,8 +59,8 @@ async function loadPouringSound() {
 }
 
 async function playPouringSound(duration) {
+  if (!state.isSoundEnabled) return;
   const ctx = await initAudio();
-  if (!ctx || ctx.state !== 'running') return;
 
   const buffer = await loadPouringSound();
   if (!buffer) return;
@@ -83,8 +83,8 @@ async function playPouringSound(duration) {
 }
 
 async function playWinSound() {
+  if (!state.isSoundEnabled) return;
   const ctx = await initAudio();
-  if (!ctx || ctx.state !== 'running') return;
 
   const now = ctx.currentTime;
   const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
@@ -142,7 +142,8 @@ let state = {
   jars: [], // Array of arrays: [[color, color], [color]]
   selectedJarIndex: null,
   history: [],
-  isAnimating: false
+  isAnimating: false,
+  isSoundEnabled: localStorage.getItem('chroma_pour_sound') !== 'false'
 };
 
 // DOM Elements
@@ -160,6 +161,19 @@ const adPrompt = document.getElementById('ad-prompt');
 const adContent = document.getElementById('ad-content');
 const adTimer = document.getElementById('ad-timer');
 const progressFill = document.getElementById('progress-fill');
+const soundBtn = document.getElementById('sound-btn');
+const soundOnIcon = document.getElementById('sound-on-icon');
+const soundOffIcon = document.getElementById('sound-off-icon');
+
+function updateSoundUI() {
+  if (state.isSoundEnabled) {
+    soundOnIcon.classList.remove('hidden');
+    soundOffIcon.classList.add('hidden');
+  } else {
+    soundOnIcon.classList.add('hidden');
+    soundOffIcon.classList.remove('hidden');
+  }
+}
 
 // Initialize Game
 function init() {
@@ -196,6 +210,14 @@ function init() {
 
   watchAdBtn.addEventListener('click', startAdFlow);
   cancelAdBtn.addEventListener('click', () => adOverlay.classList.add('hidden'));
+
+  soundBtn.addEventListener('click', () => {
+    state.isSoundEnabled = !state.isSoundEnabled;
+    localStorage.setItem('chroma_pour_sound', state.isSoundEnabled);
+    updateSoundUI();
+  });
+
+  updateSoundUI();
 }
 
 function setupLevel(level) {

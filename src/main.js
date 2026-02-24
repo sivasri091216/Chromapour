@@ -10,17 +10,17 @@ async function initAudio() {
   if (audioCtx.state === 'suspended') {
     await audioCtx.resume();
   }
-  loadPouringSound(); // Preload pouring sound
+  return audioCtx;
 }
 
-function playGlugSound() {
-  initAudio();
-  if (!audioCtx) return;
+async function playGlugSound() {
+  const ctx = await initAudio();
+  if (!ctx || ctx.state !== 'running') return;
 
-  const now = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
 
   // "Pop" or "Bubble" sound
   osc.type = 'triangle';
@@ -31,12 +31,12 @@ function playGlugSound() {
   filter.frequency.setValueAtTime(400, now);
   filter.Q.setValueAtTime(10, now);
 
-  gain.gain.setValueAtTime(0.08, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  gain.gain.setValueAtTime(0.15, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
   osc.connect(filter);
   filter.connect(gain);
-  gain.connect(audioCtx.destination);
+  gain.connect(ctx.destination);
 
   osc.start(now);
   osc.stop(now + 0.1);
@@ -46,10 +46,11 @@ let pouringBuffer = null;
 
 async function loadPouringSound() {
   if (pouringBuffer) return pouringBuffer;
+  const ctx = await initAudio();
   try {
     const response = await fetch('sounds/pouring.mp3');
     const arrayBuffer = await response.arrayBuffer();
-    pouringBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    pouringBuffer = await ctx.decodeAudioData(arrayBuffer);
     return pouringBuffer;
   } catch (e) {
     console.error('Failed to load pouring sound:', e);
@@ -58,34 +59,34 @@ async function loadPouringSound() {
 }
 
 async function playPouringSound(duration) {
-  initAudio();
-  if (!audioCtx) return;
+  const ctx = await initAudio();
+  if (!ctx || ctx.state !== 'running') return;
 
   const buffer = await loadPouringSound();
   if (!buffer) return;
 
-  const now = audioCtx.currentTime;
-  const source = audioCtx.createBufferSource();
+  const now = ctx.currentTime;
+  const source = ctx.createBufferSource();
   source.buffer = buffer;
 
-  const gain = audioCtx.createGain();
+  const gain = ctx.createGain();
   gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.3, now + 0.1);
-  gain.gain.setValueAtTime(0.3, now + duration - 0.1);
+  gain.gain.linearRampToValueAtTime(0.4, now + 0.1);
+  gain.gain.setValueAtTime(0.4, now + duration - 0.1);
   gain.gain.linearRampToValueAtTime(0, now + duration);
 
   source.connect(gain);
-  gain.connect(audioCtx.destination);
+  gain.connect(ctx.destination);
 
   source.start(now);
   source.stop(now + duration);
 }
 
-function playWinSound() {
-  initAudio();
-  if (!audioCtx) return;
+async function playWinSound() {
+  const ctx = await initAudio();
+  if (!ctx || ctx.state !== 'running') return;
 
-  const now = audioCtx.currentTime;
+  const now = ctx.currentTime;
   const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
 
   notes.forEach((freq, i) => {
@@ -99,7 +100,7 @@ function playWinSound() {
     gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.5);
 
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(ctx.destination);
 
     osc.start(now + i * 0.1);
     osc.stop(now + i * 0.1 + 0.5);

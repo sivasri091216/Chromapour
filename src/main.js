@@ -441,16 +441,16 @@ function undo() {
   render();
 }
 
-async function startAdFlow() {
+async function startAdFlow(addJarReward = true) {
   adPrompt.classList.add('hidden');
   adContent.classList.remove('hidden');
 
-  let secondsLeft = 5;
+  let secondsLeft = 2; // Reduced from 5s to 2s for snappier feel
   adTimer.textContent = secondsLeft;
   progressFill.style.width = '0%';
 
   const startTime = Date.now();
-  const duration = 5000;
+  const duration = 2000;
 
   return new Promise((resolve) => {
     const interval = setInterval(() => {
@@ -467,7 +467,7 @@ async function startAdFlow() {
       if (elapsed >= duration) {
         clearInterval(interval);
         adOverlay.classList.add('hidden');
-        confirmAddJar();
+        if (addJarReward) confirmAddJar();
         resolve();
       }
     }, 50);

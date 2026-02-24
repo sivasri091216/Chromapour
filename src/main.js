@@ -336,22 +336,20 @@ async function performPour(fromIndex, toIndex) {
   const toRect = toEl.getBoundingClientRect();
 
   const isPouringRight = toRect.left > fromRect.left;
-  const rotation = isPouringRight ? 80 : -80;
+  const rotation = isPouringRight ? 75 : -75;
 
-  // Alignment logic: 
-  // If pouring right, we want the top-right of the source to align with its new pos
-  // If pouring left, we want the top-left of the source to align
-  let deltaX, deltaY;
-  const jarWidth = fromRect.width;
+  // Pivot around the top edge corner
+  fromEl.style.transformOrigin = isPouringRight ? 'top right' : 'top left';
 
+  // Calculate delta to put the pivot point right above the target's opening
+  let deltaX;
   if (isPouringRight) {
-    fromEl.style.transformOrigin = 'top right';
     deltaX = (toRect.left + toRect.width / 2) - fromRect.right;
   } else {
-    fromEl.style.transformOrigin = 'top left';
     deltaX = (toRect.left + toRect.width / 2) - fromRect.left;
   }
-  deltaY = toRect.top - fromRect.top - 60;
+
+  const deltaY = toRect.top - fromRect.top - 50; // Distance above target
 
   // 1. Move and Tilt
   fromEl.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -364,7 +362,11 @@ async function performPour(fromIndex, toIndex) {
   const stream = document.createElement('div');
   stream.className = 'stream';
   stream.style.color = colorToPour;
-  stream.style.setProperty('--stream-height', '60');
+  // Make stream longer to reach inside the target bottle
+  const streamHeight = 80;
+  stream.style.setProperty('--stream-height', streamHeight.toString());
+
+  // Position stream relative to the pivot point
   if (isPouringRight) {
     stream.style.right = '0';
   } else {
@@ -389,7 +391,7 @@ async function performPour(fromIndex, toIndex) {
     newFromEl.style.zIndex = '100';
     newFromEl.appendChild(stream);
 
-    playGlugSound();
+    await playGlugSound();
     await new Promise(r => setTimeout(r, 300));
   }
 

@@ -334,21 +334,42 @@ async function performPour(fromIndex, toIndex) {
   // Calculate relative position for animation
   const fromRect = fromEl.getBoundingClientRect();
   const toRect = toEl.getBoundingClientRect();
-  const deltaX = toRect.left - fromRect.left + 40; // Offset for pouring position
-  const deltaY = toRect.top - fromRect.top - 60;
+
+  const isPouringRight = toRect.left > fromRect.left;
+  const rotation = isPouringRight ? 80 : -80;
+
+  // Alignment logic: 
+  // If pouring right, we want the top-right of the source to align with its new pos
+  // If pouring left, we want the top-left of the source to align
+  let deltaX, deltaY;
+  const jarWidth = fromRect.width;
+
+  if (isPouringRight) {
+    fromEl.style.transformOrigin = 'top right';
+    deltaX = (toRect.left + toRect.width / 2) - fromRect.right;
+  } else {
+    fromEl.style.transformOrigin = 'top left';
+    deltaX = (toRect.left + toRect.width / 2) - fromRect.left;
+  }
+  deltaY = toRect.top - fromRect.top - 60;
 
   // 1. Move and Tilt
-  fromEl.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-  fromEl.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(80deg)`;
+  fromEl.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+  fromEl.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`;
   fromEl.style.zIndex = '100';
 
-  await new Promise(r => setTimeout(r, 500));
+  await new Promise(r => setTimeout(r, 600));
 
   // 2. Add Stream
   const stream = document.createElement('div');
   stream.className = 'stream';
   stream.style.color = colorToPour;
   stream.style.setProperty('--stream-height', '60');
+  if (isPouringRight) {
+    stream.style.right = '0';
+  } else {
+    stream.style.left = '0';
+  }
   fromEl.appendChild(stream);
 
   // Play continuous pouring sound for the duration of the transfer
@@ -363,7 +384,8 @@ async function performPour(fromIndex, toIndex) {
 
     // Maintain the transform after render
     const newFromEl = document.querySelector(`.jar[data-index="${fromIndex}"]`);
-    newFromEl.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(80deg)`;
+    newFromEl.style.transformOrigin = isPouringRight ? 'top right' : 'top left';
+    newFromEl.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`;
     newFromEl.style.zIndex = '100';
     newFromEl.appendChild(stream);
 
